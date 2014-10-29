@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="utf-8"> <!-- Caratteri unicode -->
+  <title>Slot Machine</title>
+  <!-- Foglio di stile -->
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+<div class="container">
+  <div class="text-center">
+    <h1 id="h1">Slot Machine</h2><hr>
+  </div>
+  <div class="items">
+    <div class="item" id="1">0</div>
+    <div class="item" id="2">0</div>
+    <div class="item" id="3">0</div>
+  </div><hr>
+  <div class="text-center" id="msg">Inizia a giocare!</div>
+  <button id="butt" onclick="gioca()">Gioca</button>
+  <div class="text-center" id="msg2"></div>
+</div>
+
+<!-- Script alla fine dell'html in modo che vengano caricati dopo aver
+renderizzato la pagina -->
+<script src="slot.js"></script>
+</body>
+</html>
