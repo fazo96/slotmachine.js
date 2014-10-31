@@ -1,4 +1,5 @@
 // Slot machine (Enrico Fasoli)
+var STARTING_COINS = 3
 
 // Utility:
 function get(a){ return window.localStorage.getItem(a); }
@@ -21,14 +22,14 @@ var semaforo = true; // Impedisce di fare una giocata durante un'altra giocata
 var risultati = JSON.parse(get("risultati")) || {
   coppie: 0, jackpot: 0
 }
-var ncoins = get("coins") || 5
+var ncoins = parseInt(get("coins")) || STARTING_COINS
 coins(ncoins) // Imposto il numero di gettoni
 
 // Funzioni:
 
 function restart(){ // Nuova partita
   localStorage.removeItem("coins"); localStorage.removeItem("risultati");
-  coins(10);
+  coins(STARTING_COINS);
   risultati = { coppie: 0, jackpot: 0 };
 }
 
@@ -67,30 +68,38 @@ function fastspin(arg){ // Fa partire la rotazione dei numeri e ritona l'handler
 
 // Esegui una giocata di slot machine (serve un gettone)
 var gioca = function(){
+  var fine = false
   if(!semaforo)
     return document.getElementById("msg_up").innerHTML = "Pazienza!!"
-  if(coins() == 0){ // Fine partita
+  if(coins() <= 0){ // Fine partita
+    fine = true
     document.getElementById("msg_up").innerHTML = "Hai finito i gettoni! \
     I tuoi risultati sono: "+risultati.coppie+" coppie e "+risultati.jackpot+" \
     jackpot!";
-    return restart();
+    //return restart();
+  } else {
+    coins(coins()-1);
+    document.getElementById("msg_up").innerHTML = "..."
+    semaforo = false; // Semaforo rosso
+    var spins = slots.map(fastspin); // faccio partire la rotazione per tutti
+    slots.forEach(function(item,index){ // Fermo la rotazione per ogni numero
+      window.setTimeout(function(){
+        window.clearInterval(spins[index]) // Fermo la rotazione del numero
+        if(index == 2){ // Ultimo numero: fine della giocata
+          document.getElementById("msg_up").innerHTML = punteggio();
+          // Fra 1 secondo posso giocare di nuovo:
+          window.setTimeout(function(){semaforo = true;},500);
+        }
+      },500+500*index,item)
+    })
   }
-  coins(coins()-1);
-  document.getElementById("msg_up").innerHTML = "..."
-  semaforo = false; // Semaforo rosso
-  var spins = slots.map(fastspin); // faccio partire la rotazione per tutti
-  slots.forEach(function(item,index){ // Fermo la rotazione per ogni numero
-    window.setTimeout(function(){
-      window.clearInterval(spins[index]) // Fermo la rotazione del numero
-      if(index == 2){ // Ultimo numero: fine della giocata
-        document.getElementById("msg_up").innerHTML = punteggio();
-        // Fra 1 secondo posso giocare di nuovo:
-        window.setTimeout(function(){semaforo = true;},500);
-      }
-    },500+500*index,item)
-  })
-  if(coins() == 0){ // Conclusione partita...
+  if(coins() <= 0){ // Conclusione partita...
     localStorage.removeItem("coins"); localStorage.removeItem("risultati");
-    document.getElementById("butt").innerHTML = "Concludi"
-  }
+    document.getElementById("butt").innerHTML = fine? "Rigioca" : "Concludi"
+    if(fine){
+      restart();
+      document.getElementById("msg_coin").innerHTML = "Ricomincerai con \
+                                                      "+coins()+" gettoni";
+    }
+  } else document.getElementById("butt").innerHTML = "Gioca"
 }
