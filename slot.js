@@ -5,6 +5,35 @@ var STARTING_COINS = 3
 function get(a){ return window.localStorage.getItem(a); }
 function set(a,b){ return window.localStorage.setItem(a,b); }
 
+// Inizializzazione speech rec
+
+var rec = undefined;
+if ('webkitSpeechRecognition' in window) {
+  // web rec supportata
+
+  rec = new webkitSpeechRecognition()
+  rec.continuous = true
+  rec.interimResults = false
+
+  var p = ["gioca","giochi","rigioca","rigiochi","tira","ancora"]
+
+  rec.onerror = function(a){
+    console.log("Errore Speech Rec:")
+    console.log(a)
+  }
+  rec.onstart = function() {
+    var msg_rec = document.getElementById("msg_rec")
+    msg_rec.innerHTML = "Abilitato riconoscimento vocale"
+  }
+  rec.onresult = function(event) {
+    var risultato = event.results[event.results.length-1][0].transcript
+    p.forEach(function(e){ if(String(risultato).trim() == e) gioca(); })
+  }
+
+console.log(rec);
+  rec.start()
+}
+
 // Inizializzazione programma:
 
 if(get("coins") || get("risultati")){
