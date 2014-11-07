@@ -21,13 +21,19 @@ if ('webkitSpeechRecognition' in window) {
     console.log("Errore Speech Rec:")
     console.log(a)
   }
+  rec.onnomatch = function(){
+    console.log("Speech Rec: Non ho capito");
+  }
   rec.onstart = function() {
     var msg_rec = document.getElementById("msg_rec")
     msg_rec.innerHTML = "Abilitato riconoscimento vocale"
   }
   rec.onresult = function(event) {
     var risultato = event.results[event.results.length-1][0].transcript
-    p.forEach(function(e){ if(String(risultato).trim() == e) gioca(); })
+    console.log("Speech Rec"+risultato)
+    p.forEach(function(e){ if(String(risultato).trim().toLowerCase() == e)
+      gioca();
+    })
   }
 
 console.log(rec);
