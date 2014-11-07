@@ -7,15 +7,14 @@ function set(a,b){ return window.localStorage.setItem(a,b); }
 
 // Inizializzazione speech rec
 
-var rec = undefined;
 if ('webkitSpeechRecognition' in window) {
   // web rec supportata
 
-  rec = new webkitSpeechRecognition()
+  var rec = new webkitSpeechRecognition()
   rec.continuous = true
   rec.interimResults = false
 
-  var p = ["gioca","giochi","rigioca","rigiochi","tira","ancora"]
+  var p = ["gioca","giochi","rigioca","rigiochi","tira","ancora","ancona"]
 
   rec.onerror = function(a){
     console.log("Errore Speech Rec:")
@@ -30,13 +29,11 @@ if ('webkitSpeechRecognition' in window) {
   }
   rec.onresult = function(event) {
     var risultato = event.results[event.results.length-1][0].transcript
-    console.log("Speech Rec"+risultato)
-    p.forEach(function(e){ if(String(risultato).trim().toLowerCase() == e)
-      gioca();
+    console.log("Speech Rec: "+risultato)
+    p.forEach(function(e){
+      if(String(risultato).trim().toLowerCase() == e) gioca();
     })
   }
-
-console.log(rec);
   rec.start()
 }
 
@@ -90,7 +87,6 @@ function punteggio(){ // Calcola i risultati di 1 giocata
     coins(parseInt(coins())+1)
     return "COPPIA! hai vinto 1 gettone"
   }
-  console.log(risultati);
   set("risultati",JSON.stringify(risultati));
   return "Magari la prossima volta!"
 }
